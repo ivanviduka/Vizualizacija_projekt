@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script src="http://d3js.org/topojson.v1.min.js"></script>
+</head>
+
+
+<body>
+
+    <div id="shot-chart"></div>
+
+<script>
+    $(function() {
+        
+   
+
+    var shotsData = null;
+    $.ajax({
+    'async': false,
+    'global': false,
+    'url': "http://localhost:80/d3_projekt/2013-2014.json",
+    'dataType': "json",
+    'success': function (data) {
+        shotsData = data;
+    }
+    });
+
+    function loadShotChart(playerData) {
+        var max = { 
+            x: 780, 
+            y: 650
+        };
+        var svg = d3.select("#shot-chart").html("");
+        svg = d3.select("#shot-chart").append("svg:svg")
+        .attr("width", max.x)
+        .attr("height", max.y)
+        .attr("background-color", "#122737")
+        .append("g")
+        .attr("id", "shotchart");
+
+        var courtBGUrl = "{% static 'images/court.jpg' %}";
+        svg.append("svg:defs")
+        .append("svg:pattern")
+        .attr("id", "bg")
+        .attr('patternUnits', 'userSpaceOnUse')
+        .attr("width", max.x)
+        .attr("height", max.y)
+        .append("svg:image")
+        .attr("id","image-url")
+        .attr("width", max.x)
+        .attr("height", max.y);
+
+        svg.append("rect")
+        .attr("x", "0")
+        .attr("y", "0")
+        .attr("width", max.x)
+        .attr("height", max.y)
+        .attr("fill", "url(#bg)");
+
+        var xScale = d3.scale.linear()
+        .domain([-250, 250])
+        .range([0, 780]);
+
+        var yScale = d3.scale.linear()
+        .domain([-1,0, -150])
+        .range([590,589, 371]);
+
+        var colorValue = function(d) {
+            if(d[10] === 0) {
+                return "#8b0000";
+            }
+            if(d[10] === 1) {
+                return "#013220";
+            }
+        }
+
+        var xValue = function(d) {
+            return xScale(-d[15]);
+        }
+
+        var yValue = function(d) {
+            return (yScale(-d[16]));
+        }
+
+        var classByShot = function(d) {
+            if(d[10] === 0) {
+                return "dot missed";
+            }
+            if(d[10] === 1) {
+                return "dot made";
+            }
+        }
+
+        d3.selectAll('dot').remove();
+        var node = svg.selectAll("dot").data(playerData)
+        node.enter()
+        .append("svg:circle")
+        .attr("r", 4)
+        .attr("cx", function(d) { return  xValue(d);})
+        .attr("cy", function(d) { return yValue(d);})
+        .attr("class", function(d) { return classByShot(d);})
+        .style("fill", function(d) { return colorValue(d);});
+    }
+
+    loadShotChart(shotsData);
+  });
+</script>
+</body>
+</html>
+
