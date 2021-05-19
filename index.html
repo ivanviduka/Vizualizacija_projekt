@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-    <script src="http://d3js.org/topojson.v1.min.js"></script>
 </head>
 
 
@@ -11,102 +11,292 @@
 
     <div id="shot-chart"></div>
 
-<script>
-    $(function() {
-        
-   
+    <script>
+        $(function () {
 
-    var shotsData = null;
-    $.ajax({
-    'async': false,
-    'global': false,
-    'url': "http://localhost:80/d3_projekt/2013-2014.json",
-    'dataType': "json",
-    'success': function (data) {
-        shotsData = data;
-    }
-    });
 
-    function loadShotChart(playerData) {
-        var max = { 
-            x: 780, 
-            y: 650
-        };
-        var svg = d3.select("#shot-chart").html("");
-        svg = d3.select("#shot-chart").append("svg:svg")
-        .attr("width", max.x)
-        .attr("height", max.y)
-        .attr("background-color", "#122737")
-        .append("g")
-        .attr("id", "shotchart");
 
-        var courtBGUrl = "{% static 'images/court.jpg' %}";
-        svg.append("svg:defs")
-        .append("svg:pattern")
-        .attr("id", "bg")
-        .attr('patternUnits', 'userSpaceOnUse')
-        .attr("width", max.x)
-        .attr("height", max.y)
-        .append("svg:image")
-        .attr("id","image-url")
-        .attr("width", max.x)
-        .attr("height", max.y);
+            d3.json("2013-2014.json", function (shotsData) {
+                loadShotChart(shotsData);
+                loadPieChart(shotsData);
+                loadMakesAndMissesTwo(shotsData);
+                loadMakesAndMissesThree(shotsData);
+            });
 
-        svg.append("rect")
-        .attr("x", "0")
-        .attr("y", "0")
-        .attr("width", max.x)
-        .attr("height", max.y)
-        .attr("fill", "url(#bg)");
 
-        var xScale = d3.scale.linear()
-        .domain([-250, 250])
-        .range([0, 780]);
+        });
 
-        var yScale = d3.scale.linear()
-        .domain([-1,0, -150])
-        .range([590,589, 371]);
+        function loadShotChart(playerData) {
+            var maxSize = {
+                x: 780,
+                y: 650
+            };
 
-        var colorValue = function(d) {
-            if(d[10] === 0) {
-                return "#8b0000";
+
+            var svg = d3.select("#shot-chart").html("");
+            svg = d3.select("#shot-chart").append("svg:svg")
+                .attr("width", maxSize.x)
+                .attr("height", maxSize.y)
+                .attr("background-color", "#122737")
+                .style("background", 'url("/images/court.jpg")')
+                .style("background-size", "780px 650px")
+                .append("g")
+                .attr("id", "shotchart");
+
+            var courtBGUrl = "./court.jpg";
+            svg.append("svg:defs")
+                .append("svg:pattern")
+                .attr("id", "bg")
+                .attr('patternUnits', 'userSpaceOnUse')
+                .attr("width", maxSize.x)
+                .attr("height", maxSize.y)
+                .append("svg:image")
+                .attr("id", "image-url")
+                .attr("width", maxSize.x)
+                .attr("height", maxSize.y);
+
+            svg.append("rect")
+                .attr("x", "0")
+                .attr("y", "0")
+                .attr("width", maxSize.x)
+                .attr("height", maxSize.y)
+                .attr("fill", "url(#bg)");
+
+            var xScale = d3.scale.linear()
+                .domain([-250, 250])
+                .range([0, 780]);
+
+            var yScale = d3.scale.linear()
+                .domain([-1, 0, -150])
+                .range([590, 589, 371]);
+
+            var colorValue = function (d) {
+                if (d === 0) {
+                    return "#8b0000";
+                }
+                if (d === 1) {
+                    return "#013220";
+                }
             }
-            if(d[10] === 1) {
-                return "#013220";
+
+            var xValue = function (d) {
+                return xScale(-d);
             }
+
+            var yValue = function (d) {
+                return (yScale(-d));
+            }
+
+            var classByShot = function (d) {
+                if (d === 0) {
+                    return "dot-missed";
+                }
+                if (d === 1) {
+                    return "dot-made";
+                }
+            }
+
+            d3.selectAll('dot').remove();
+            var node = svg.selectAll("dot").data(playerData)
+            node.enter()
+                .append("svg:circle")
+                .attr("r", 4)
+                .attr("cx", function (d) { return xValue(d.x); })
+                .attr("cy", function (d) { return yValue(d.y); })
+                .attr("class", function (d) { return classByShot(d.shot_made_flag); })
+                .style("fill", function (d) { return colorValue(d.shot_made_flag); });
         }
 
-        var xValue = function(d) {
-            return xScale(-d[15]);
-        }
 
-        var yValue = function(d) {
-            return (yScale(-d[16]));
-        }
+        function loadPieChart(playerData){
+            var width = 500;
+            var height = 500;
+            var outerRadius = 200;
+            var innerRadius = 0;
+            
+            var numberOfTwoPointers = 0;
+            var numberofThreePointers = 0;
 
-        var classByShot = function(d) {
-            if(d[10] === 0) {
-                return "dot missed";
+            for(i in playerData){
+                if(playerData[i].shot_type === "2PT Field Goal"){
+                    numberOfTwoPointers++;
+                }
+
+                else if(playerData[i].shot_type === "3PT Field Goal"){
+                    numberofThreePointers++;
+                }
             }
-            if(d[10] === 1) {
-                return "dot made";
-            }
+
+            
+            
+            var data = [
+                {name: "2 POINT SHOT", value: numberOfTwoPointers },
+                {name: "3 POINT SHOT", value: numberofThreePointers}
+            ]
+
+            console.log(data);
+            
+
+            var color = d3.scale.category20();
+
+            var arc = d3.svg.arc()
+                .innerRadius(innerRadius)
+                .outerRadius(outerRadius);
+
+            var pie = d3.layout.pie()
+                .value(function(d) { return d.value; });
+
+            var svg = d3.select("body")
+                       .append("svg")
+                       .attr("width", width)
+                       .attr("height", height);
+                            
+            var pieArcs = svg.selectAll("g.pie")
+                            .data(pie(data))
+                            .enter()
+                            .append("g")
+                            .attr("class", "pie")
+                            .attr("transform", "translate(" + (width / 2) + ", " + (height / 2) +")")
+                            .on("mouseover", function(d) {console.log("Broj suteva:", d.data.value)});  
+            
+            pieArcs.append("path")
+                   .attr("fill", function(d, i) { return color(i); })
+                   .attr("d", arc);
+            
+            pieArcs.append("text")
+                    .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+                    .attr("text-anchor", "middle")
+                    .text(function(d) { return d.data.name; });
+                    
+            
         }
 
-        d3.selectAll('dot').remove();
-        var node = svg.selectAll("dot").data(playerData)
-        node.enter()
-        .append("svg:circle")
-        .attr("r", 4)
-        .attr("cx", function(d) { return  xValue(d);})
-        .attr("cy", function(d) { return yValue(d);})
-        .attr("class", function(d) { return classByShot(d);})
-        .style("fill", function(d) { return colorValue(d);});
-    }
+        function loadMakesAndMissesTwo(playerData){
+            var width = 500;
+            var height = 500;
+            var outerRadius = 200;
+            var innerRadius = 0;
+            
+            var numberOfMakes = 0;
+            var numberofMisses = 0;
 
-    loadShotChart(shotsData);
-  });
-</script>
+            for(i in playerData){
+                if((playerData[i].shot_type === "2PT Field Goal") && (playerData[i].shot_made_flag === 1)){
+                    numberOfMakes++;
+                }
+
+                else if((playerData[i].shot_type === "2PT Field Goal") && (playerData[i].shot_made_flag === 0)){
+                    numberofMisses++;
+                }
+            }
+
+            
+            
+            var data = [
+                {name: "MAKES", value: numberOfMakes },
+                {name: "MISSES", value: numberofMisses}
+            ]
+
+            console.log(data);
+            
+
+            var color = d3.scale.category20();
+
+            var arc = d3.svg.arc()
+                .innerRadius(innerRadius)
+                .outerRadius(outerRadius);
+
+            var pie = d3.layout.pie()
+                .value(function(d) { return d.value; });
+
+            var svg = d3.select("body")
+                       .append("svg")
+                       .attr("width", width)
+                       .attr("height", height);
+                            
+            var pieArcs = svg.selectAll("g.pie")
+                            .data(pie(data))
+                            .enter()
+                            .append("g")
+                            .attr("class", "pie")
+                            .attr("transform", "translate(" + (width / 2) + ", " + (height / 2) +")")
+                            .on("mouseover", function(d) {console.log("Broj suteva:", d.data.value)});  
+            
+            pieArcs.append("path")
+                   .attr("fill", function(d, i) { return color(i); })
+                   .attr("d", arc);
+            
+            pieArcs.append("text")
+                    .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+                    .attr("text-anchor", "middle")
+                    .text(function(d) { return d.data.name; });
+                    
+            
+        }
+
+        function loadMakesAndMissesThree(playerData){
+            var width = 500;
+            var height = 500;
+            var outerRadius = 200;
+            var innerRadius = 0;
+            
+            var numberOfMakes = 0;
+            var numberofMisses = 0;
+
+            for(i in playerData){
+                if((playerData[i].shot_type === "3PT Field Goal") && (playerData[i].shot_made_flag === 1)){
+                    numberOfMakes++;
+                }
+
+                else if((playerData[i].shot_type === "3PT Field Goal") && (playerData[i].shot_made_flag === 0)){
+                    numberofMisses++;
+                }
+            }
+
+            
+            
+            var data = [
+                {name: "MAKES", value: numberOfMakes },
+                {name: "MISSES", value: numberofMisses}
+            ]
+
+            console.log(data);
+            
+
+            var color = d3.scale.category20();
+
+            var arc = d3.svg.arc()
+                .innerRadius(innerRadius)
+                .outerRadius(outerRadius);
+
+            var pie = d3.layout.pie()
+                .value(function(d) { return d.value; });
+
+            var svg = d3.select("body")
+                       .append("svg")
+                       .attr("width", width)
+                       .attr("height", height);
+                            
+            var pieArcs = svg.selectAll("g.pie")
+                            .data(pie(data))
+                            .enter()
+                            .append("g")
+                            .attr("class", "pie")
+                            .attr("transform", "translate(" + (width / 2) + ", " + (height / 2) +")")
+                            .on("mouseover", function(d) {console.log("Broj suteva:", d.data.value)});  
+            
+            pieArcs.append("path")
+                   .attr("fill", function(d, i) { return color(i); })
+                   .attr("d", arc);
+            
+            pieArcs.append("text")
+                    .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+                    .attr("text-anchor", "middle")
+                    .text(function(d) { return d.data.name; });
+                    
+            
+        }
+    </script>
 </body>
-</html>
 
+</html>
