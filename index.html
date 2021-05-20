@@ -38,12 +38,12 @@
                 .attr("width", maxSize.x)
                 .attr("height", maxSize.y)
                 .attr("background-color", "#122737")
-                .style("background", 'url("/images/court.jpg")')
+                .style("background", 'url("court.jpg")')
                 .style("background-size", "780px 650px")
                 .append("g")
                 .attr("id", "shotchart");
 
-            var courtBGUrl = "./court.jpg";
+            var courtBGUrl = "court.jpg";
             svg.append("svg:defs")
                 .append("svg:pattern")
                 .attr("id", "bg")
@@ -104,7 +104,8 @@
                 .attr("cx", function (d) { return xValue(d.x); })
                 .attr("cy", function (d) { return yValue(d.y); })
                 .attr("class", function (d) { return classByShot(d.shot_made_flag); })
-                .style("fill", function (d) { return colorValue(d.shot_made_flag); });
+                .style("fill", function (d) { return colorValue(d.shot_made_flag); })
+                .on("mouseover", function(d) {console.log("Datum utakmica:", d.game_date, "Protivnik:", d.opponent)});
         }
 
 
@@ -213,6 +214,8 @@
                        .append("svg")
                        .attr("width", width)
                        .attr("height", height);
+
+        
                             
             var pieArcs = svg.selectAll("g.pie")
                             .data(pie(data))
