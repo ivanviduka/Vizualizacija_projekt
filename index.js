@@ -170,10 +170,10 @@ function loadShotChart(playerData) {
     function setOpacity(playerInfo) {
 
         if (((currentQuaterSelected === playerInfo.period) || (currentQuaterSelected === 0)) && (currentPlayerSelected === playerInfo.name) && ((currentOpponentSelected === playerInfo.opponent) || (currentOpponentSelected === "any"))) {
-            return 1.0;
+            return 0.7;
         }
 
-        else return 0.1;
+        else return 0.05;
 
 
     }
