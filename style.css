@@ -12,8 +12,8 @@
 
 .info {
     font-family: serif;
-    font-size: 20px;
-    margin-top: 20px;
+    font-size: 30px;
+
 }
 
 #title{
@@ -90,9 +90,16 @@
 
 #bar-chart{
     display: flex;
+    flex-direction: column;
     justify-content: center;
-    margin-top: 10px;
+    width: max-content;
+    margin: 0 auto;
 
+}
+
+#barchart-buttons{
+    width: max-content;
+    margin: 0 auto;
 }
 
 g.tick{

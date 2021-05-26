@@ -325,7 +325,6 @@ function loadPieChart(playerData) {
         .attr("class", "pie")
         .attr("transform", "translate(" + (width / 2) + ", " + (height / 2) + ")")
         .on("mouseover", function (d) { return showNumberOfShotsInfo(d.data.value); })
-        .on("mousemove", function () { return tooltip.style("top", (d3.event.pageY) + "px").style("left", (d3.event.pageX) + "px"); })
         .on("mouseout", function () { return tooltip.style("visibility", "hidden"); });
 
     function showNumberOfShotsInfo(numberOfShots) {
@@ -429,7 +428,6 @@ function loadMakesAndMissesTwo(playerData) {
         .attr("class", "pie")
         .attr("transform", "translate(" + (width / 2) + ", " + (height / 2) + ")")
         .on("mouseover", function (d) { return showNumberOfTwoPointShotsInfo(d.data.value); })
-        .on("mousemove", function () { return tooltip.style("top", (d3.event.pageY) + "px").style("left", (d3.event.pageX) + "px"); })
         .on("mouseout", function () { return tooltip.style("visibility", "hidden"); });
 
     function showNumberOfTwoPointShotsInfo(numberOfShots) {
@@ -534,7 +532,6 @@ function loadMakesAndMissesThree(playerData) {
         .attr("class", "pie")
         .attr("transform", "translate(" + (width / 2) + ", " + (height / 2) + ")")
         .on("mouseover", function (d) { return showNumberOfThreePointShotsInfo(d.data.value); })
-        .on("mousemove", function () { return tooltip.style("top", (d3.event.pageY) + "px").style("left", (d3.event.pageX) + "px"); })
         .on("mouseout", function () { return tooltip.style("visibility", "hidden"); });
 
     function showNumberOfThreePointShotsInfo(numberOfShots) {
