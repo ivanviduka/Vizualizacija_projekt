@@ -157,12 +157,25 @@ function loadShotChart(playerData) {
 
     var selectedPlayerData = [];
 
+
+
     for (index in playerData) {
 
 
         if (((currentQuaterSelected === playerData[index].period) || (currentQuaterSelected === 0)) && (currentPlayerSelected === playerData[index].name) && ((currentOpponentSelected === playerData[index].opponent) || (currentOpponentSelected === "any"))) {
             selectedPlayerData.push(playerData[index]);
         }
+    }
+
+    function setOpacity(playerInfo) {
+
+        if (((currentQuaterSelected === playerInfo.period) || (currentQuaterSelected === 0)) && (currentPlayerSelected === playerInfo.name) && ((currentOpponentSelected === playerInfo.opponent) || (currentOpponentSelected === "any"))) {
+            return 1.0;
+        }
+
+        else return 0.1;
+
+
     }
 
 
@@ -236,13 +249,14 @@ function loadShotChart(playerData) {
 
 
     d3.selectAll('dot').remove();
-    var node = svg.selectAll("dot").data(selectedPlayerData)
+    var node = svg.selectAll("dot").data(playerData)
     node.enter()
         .append("svg:circle")
         .attr("r", 6)
         .attr("cx", function (d) { return xValue(d.x); })
         .attr("cy", function (d) { return yValue(d.y); })
         .attr("id", "shots-circle")
+        .attr("opacity", function(d) {return setOpacity(d);})
         .attr("class", function (d) { return classByShot(d.shot_made_flag); })
         .style("fill", function (d) { return colorValue(d.shot_made_flag); })
         .on("mouseover", function (d) { return showShotInfo(d.game_date, d.shot_clock); })
@@ -295,7 +309,7 @@ function loadPieChart(playerData) {
 
     var colors = ["#ffcc00", "#0066cc"];
 
-  
+
 
     var arc = d3.arc()
         .innerRadius(innerRadius)
@@ -304,9 +318,9 @@ function loadPieChart(playerData) {
     var pie = d3.pie()
         .value(function (d) { return d.value; });
 
-        d3.select("#types-of-shots").html("");
-        d3.select("#types-of-shots-legend").html("");
-        d3.selectAll(".pie-chart-items").style("border-style", "solid");
+    d3.select("#types-of-shots").html("");
+    d3.select("#types-of-shots-legend").html("");
+    d3.selectAll(".pie-chart-items").style("border-style", "solid");
 
     var svg = d3.select("#types-of-shots")
         .append("svg")
