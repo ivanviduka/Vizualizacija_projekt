@@ -13,6 +13,7 @@
 .info {
     font-family: serif;
     font-size: 20px;
+    margin-top: 20px;
 }
 
 #title{
@@ -61,10 +62,12 @@
 
 #shot-chart-and-options{
     display: flex;
+    flex-direction: column;
 
 }
 #shot-chart{
-    margin-right: 10px;
+  
+    margin: 0 auto;
 
 }
 
