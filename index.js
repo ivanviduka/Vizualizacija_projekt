@@ -231,6 +231,7 @@ function loadShotChart(playerData) {
 
     var tooltip = d3.select("#shot-chart")
         .append("div")
+        .attr("class", "tooltip")
         .style("position", "absolute")
         .style("visibility", "hidden");
 
@@ -313,6 +314,7 @@ function loadPieChart(playerData) {
 
     var tooltip = d3.select("#types-of-shots")
         .append("div")
+        .attr("class", "tooltip")
         .style("position", "absolute")
         .style("visibility", "hidden");
 
@@ -417,6 +419,7 @@ function loadMakesAndMissesTwo(playerData) {
 
     var tooltip = d3.select("#two-pointers")
         .append("div")
+        .attr("class", "tooltip")
         .style("position", "absolute")
         .style("visibility", "hidden");
 
@@ -522,6 +525,7 @@ function loadMakesAndMissesThree(playerData) {
 
     var tooltip = d3.select("#three-pointers")
         .append("div")
+        .attr("class", "tooltip")
         .style("position", "absolute")
         .style("visibility", "hidden");
 
