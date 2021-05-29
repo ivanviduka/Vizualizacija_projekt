@@ -157,12 +157,25 @@ function loadShotChart(playerData) {
 
     var selectedPlayerData = [];
 
+
+
     for (index in playerData) {
 
 
         if (((currentQuaterSelected === playerData[index].period) || (currentQuaterSelected === 0)) && (currentPlayerSelected === playerData[index].name) && ((currentOpponentSelected === playerData[index].opponent) || (currentOpponentSelected === "any"))) {
             selectedPlayerData.push(playerData[index]);
         }
+    }
+
+    function setOpacity(playerInfo) {
+
+        if (((currentQuaterSelected === playerInfo.period) || (currentQuaterSelected === 0)) && (currentPlayerSelected === playerInfo.name) && ((currentOpponentSelected === playerInfo.opponent) || (currentOpponentSelected === "any"))) {
+            return 0.7;
+        }
+
+        else return 0.05;
+
+
     }
 
 
@@ -237,13 +250,14 @@ function loadShotChart(playerData) {
 
 
     d3.selectAll('dot').remove();
-    var node = svg.selectAll("dot").data(selectedPlayerData)
+    var node = svg.selectAll("dot").data(playerData)
     node.enter()
         .append("svg:circle")
         .attr("r", 6)
         .attr("cx", function (d) { return xValue(d.x); })
         .attr("cy", function (d) { return yValue(d.y); })
         .attr("id", "shots-circle")
+        .attr("opacity", function(d) {return setOpacity(d);})
         .attr("class", function (d) { return classByShot(d.shot_made_flag); })
         .style("fill", function (d) { return colorValue(d.shot_made_flag); })
         .on("mouseover", function (d) { return showShotInfo(d.game_date, d.shot_clock); })
@@ -296,9 +310,7 @@ function loadPieChart(playerData) {
 
     var colors = ["#ffcc00", "#0066cc"];
 
-    d3.select("#types-of-shots").html("");
-    d3.select("#types-of-shots-legend").html("");
-    d3.selectAll(".pie-chart-items").style("border-style", "solid");
+
 
     var arc = d3.arc()
         .innerRadius(innerRadius)
@@ -306,6 +318,10 @@ function loadPieChart(playerData) {
 
     var pie = d3.pie()
         .value(function (d) { return d.value; });
+
+    d3.select("#types-of-shots").html("");
+    d3.select("#types-of-shots-legend").html("");
+    d3.selectAll(".pie-chart-items").style("border-style", "solid");
 
     var svg = d3.select("#types-of-shots")
         .append("svg")
@@ -325,7 +341,6 @@ function loadPieChart(playerData) {
         .attr("class", "pie")
         .attr("transform", "translate(" + (width / 2) + ", " + (height / 2) + ")")
         .on("mouseover", function (d) { return showNumberOfShotsInfo(d.data.value); })
-        .on("mousemove", function () { return tooltip.style("top", (d3.event.pageY - 30) + "px").style("left", (d3.event.pageX - 30) + "px"); })
         .on("mouseout", function () { return tooltip.style("visibility", "hidden"); });
 
     function showNumberOfShotsInfo(numberOfShots) {
@@ -430,7 +445,6 @@ function loadMakesAndMissesTwo(playerData) {
         .attr("class", "pie")
         .attr("transform", "translate(" + (width / 2) + ", " + (height / 2) + ")")
         .on("mouseover", function (d) { return showNumberOfTwoPointShotsInfo(d.data.value); })
-        .on("mousemove", function () { return tooltip.style("top", (d3.event.pageY - 30) + "px").style("left", (d3.event.pageX - 30) + "px"); })
         .on("mouseout", function () { return tooltip.style("visibility", "hidden"); });
 
     function showNumberOfTwoPointShotsInfo(numberOfShots) {
@@ -536,7 +550,6 @@ function loadMakesAndMissesThree(playerData) {
         .attr("class", "pie")
         .attr("transform", "translate(" + (width / 2) + ", " + (height / 2) + ")")
         .on("mouseover", function (d) { return showNumberOfThreePointShotsInfo(d.data.value); })
-        .on("mousemove", function () { return tooltip.style("top", (d3.event.pageY - 30) + "px").style("left", (d3.event.pageX - 30) + "px"); })
         .on("mouseout", function () { return tooltip.style("visibility", "hidden"); });
 
     function showNumberOfThreePointShotsInfo(numberOfShots) {
