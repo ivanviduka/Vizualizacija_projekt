@@ -1,7 +1,7 @@
 
 let pickSeasonButtons;
 var currentPlayerSelected;
-var currentQuaterSelected;
+var currentquarterSelected;
 var currentOpponentSelected;
 var tooltip;
 
@@ -20,12 +20,10 @@ function buttonClicked(event) {
 
 function loadAllForWantedSeason(season) {
 
-
-
     d3.json(season, function (shotsData) {
 
         currentPlayerSelected = shotsData[0].name;
-        currentQuaterSelected = 0;
+        currentquarterSelected = 0;
         currentOpponentSelected = "any";
         loadOptions(shotsData);
         loadShotChart(shotsData);
@@ -36,25 +34,21 @@ function loadAllForWantedSeason(season) {
 
 }
 
-
-
 function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
 }
-
 
 function loadOptions(playerShotsData) {
     d3.select("#value-step").html("");
     d3.select("#slider-step").html("");
     d3.select("#opponent-select").html("");
     d3.select("#choose-player").html("");
-    d3.select("#choose-quater").html("");
+    d3.select("#choose-quarter").html("");
     d3.select("#choose-team").html("");
 
     d3.select("#choose-player").html("Choose player");
-    d3.select("#choose-quater").html("Choose quater");
+    d3.select("#choose-quarter").html("Choose quarter");
     d3.select("#choose-team").html("Choose opponent");
-
 
     var allNames = [];
 
@@ -64,12 +58,11 @@ function loadOptions(playerShotsData) {
 
     var names = allNames.filter(onlyUnique);
 
-    // Step
     var sliderStep = d3
-        .sliderBottom()
+        .sliderVertical()
         .min(1)
         .max(names.length)
-        .width(1600)
+        .height(650)
         .tickFormat(function (d, i) { return names[i] })
         .ticks(names.length)
         .step(1)
@@ -83,42 +76,39 @@ function loadOptions(playerShotsData) {
     var gStep = d3
         .select('p#value-step')
         .append('svg')
-        .attr('width', 1800)
-        .attr('height', 100)
+        .attr('width', 200)
+        .attr('height', 700)
         .append('g')
-        .attr('transform', 'translate(30,30)');
+        .attr('transform', 'translate(120,10)');
 
     gStep.call(sliderStep);
 
+    var quarters = ["any", 1, 2, 3, 4];
 
-
-
-    var quaters = ["any", 1, 2, 3, 4];
-
-    var sliderQuatersStep = d3
+    var sliderquartersStep = d3
         .sliderBottom()
         .min(0)
         .max(4)
         .width(400)
-        .tickFormat(function (d, i) { return quaters[i] })
+        .tickFormat(function (d, i) { return quarters[i] })
         .ticks(5)
         .step(1)
         .default(0)
         .on('onchange', val => {
-            currentQuaterSelected = val;
+            currentquarterSelected = val;
             loadShotChart(playerShotsData);
 
         });
 
-    var gQuatersStep = d3
+    var gquartersStep = d3
         .select('div#slider-step')
         .append('svg')
-        .attr('width', 1900)
+        .attr('width', 500)
         .attr('height', 100)
         .append('g')
         .attr('transform', 'translate(30,30)');
 
-    gQuatersStep.call(sliderQuatersStep);
+    gquartersStep.call(sliderquartersStep);
 
     var teams = ["any", "Atlanta Hawks", "Brooklyn Nets", "Charlotte Hornets", "Chicago Bulls", "Cleveland Cavaliers",
         "Dallas Mavericks", "Denver Nuggets", "Detroit Pistons", "Golden State Warriors", "Houston Rockets", "Indiana Pacers",
@@ -145,7 +135,6 @@ function loadOptions(playerShotsData) {
 
     }
 
-
 }
 
 function loadShotChart(playerData) {
@@ -157,27 +146,24 @@ function loadShotChart(playerData) {
 
     var selectedPlayerData = [];
 
-
-
     for (index in playerData) {
 
 
-        if (((currentQuaterSelected === playerData[index].period) || (currentQuaterSelected === 0)) && (currentPlayerSelected === playerData[index].name) && ((currentOpponentSelected === playerData[index].opponent) || (currentOpponentSelected === "any"))) {
+        if (((currentquarterSelected === playerData[index].period) || (currentquarterSelected === 0)) && (currentPlayerSelected === playerData[index].name) && ((currentOpponentSelected === playerData[index].opponent) || (currentOpponentSelected === "any"))) {
             selectedPlayerData.push(playerData[index]);
         }
     }
 
     function setOpacity(playerInfo) {
 
-        if (((currentQuaterSelected === playerInfo.period) || (currentQuaterSelected === 0)) && (currentPlayerSelected === playerInfo.name) && ((currentOpponentSelected === playerInfo.opponent) || (currentOpponentSelected === "any"))) {
-            return 0.7;
+        if (((currentquarterSelected === playerInfo.period) || (currentquarterSelected === 0)) && (currentPlayerSelected === playerInfo.name) && ((currentOpponentSelected === playerInfo.opponent) || (currentOpponentSelected === "any"))) {
+            return 0.75;
         }
 
-        else return 0.05;
+        else return 0.07;
 
 
     }
-
 
     var svg = d3.select("#shot-chart").html("");
     svg = d3.select("#shot-chart").append("svg:svg")
@@ -248,16 +234,15 @@ function loadShotChart(playerData) {
         .style("position", "absolute")
         .style("visibility", "hidden");
 
-
     d3.selectAll('dot').remove();
     var node = svg.selectAll("dot").data(playerData)
     node.enter()
         .append("svg:circle")
-        .attr("r", 6)
+        .attr("r", 4)
         .attr("cx", function (d) { return xValue(d.x); })
         .attr("cy", function (d) { return yValue(d.y); })
         .attr("id", "shots-circle")
-        .attr("opacity", function(d) {return setOpacity(d);})
+        .attr("opacity", function (d) { return setOpacity(d); })
         .attr("class", function (d) { return classByShot(d.shot_made_flag); })
         .style("fill", function (d) { return colorValue(d.shot_made_flag); })
         .on("mouseover", function (d) { return showShotInfo(d.game_date, d.shot_clock); })
@@ -270,13 +255,8 @@ function loadShotChart(playerData) {
             .style("width", "200px")
             .style("background-color", "#ffff66")
             .html(`Game date: ${gameDate}<br>
-                     Shotclock time: ${timeLeft}<br>
-                    `);
+                   Shotclock time: ${timeLeft}<br>`);
     }
-
-
-
-
 
     loadPieChart(selectedPlayerData);
     loadMakesAndMissesTwo(selectedPlayerData);
@@ -307,10 +287,7 @@ function loadPieChart(playerData) {
         { name: "3 POINT SHOT", value: numberofThreePointers }
     ]
 
-
     var colors = ["#ffcc00", "#0066cc"];
-
-
 
     var arc = d3.arc()
         .innerRadius(innerRadius)
@@ -356,37 +333,32 @@ function loadPieChart(playerData) {
         .attr("fill", function (d, i) { return colors[i] })
         .attr("d", arc);
 
+    if ((data[0].value != 0) || (data[1].value != 0)) {
+        var legend = d3.select("#types-of-shots-legend")
+            .append("svg")
+            .attr("width", 150)
+            .attr("height", 100)
+            .style("background-color", "lightblue")
 
-    var legend = d3.select("#types-of-shots-legend")
-        .append("svg")
-        .attr("width", 150)
-        .attr("height", 100)
-        .style("background-color", "lightblue")
+        legend.selectAll("mydots")
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("cx", 20)
+            .attr("cy", function (d, i) { return 20 + i * 25 })
+            .attr("r", 7)
+            .style("fill", function (d, i) { return colors[i] })
 
-
-
-    // Add one dot in the legend for each name.
-    legend.selectAll("mydots")
-        .data(data)
-        .enter()
-        .append("circle")
-        .attr("cx", 20)
-        .attr("cy", function (d, i) { return 20 + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
-        .attr("r", 7)
-        .style("fill", function (d, i) { return colors[i] })
-
-    // Add one dot in the legend for each name.
-    legend.selectAll("mylabels")
-        .data(data)
-        .enter()
-        .append("text")
-        .attr("x", 35)
-        .attr("y", function (d, i) { return 20 + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
-        .text(function (d) { return d.name })
-        .attr("text-anchor", "left")
-        .style("alignment-baseline", "middle")
-
-
+        legend.selectAll("mylabels")
+            .data(data)
+            .enter()
+            .append("text")
+            .attr("x", 35)
+            .attr("y", function (d, i) { return 20 + i * 25 }) 
+            .text(function (d) { return d.name })
+            .attr("text-anchor", "left")
+            .style("alignment-baseline", "middle")
+    }
 }
 
 function loadMakesAndMissesTwo(playerData) {
@@ -407,8 +379,6 @@ function loadMakesAndMissesTwo(playerData) {
             numberofMisses++;
         }
     }
-
-
 
     var data = [
         { name: "2PT MISSES", value: numberOfMakes },
@@ -467,28 +437,25 @@ function loadMakesAndMissesTwo(playerData) {
             .attr("height", 100)
             .style("background-color", "lightblue")
 
-        // Add one dot in the legend for each name.
         legend.selectAll("mydots")
             .data(data)
             .enter()
             .append("circle")
             .attr("cx", 20)
-            .attr("cy", function (d, i) { return 20 + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
+            .attr("cy", function (d, i) { return 20 + i * 25 })
             .attr("r", 7)
             .style("fill", function (d, i) { return colors[i] })
 
-        // Add one dot in the legend for each name.
         legend.selectAll("mylabels")
             .data(data)
             .enter()
             .append("text")
             .attr("x", 35)
-            .attr("y", function (d, i) { return 20 + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
+            .attr("y", function (d, i) { return 20 + i * 25 })
             .text(function (d) { return d.name })
             .attr("text-anchor", "left")
             .style("alignment-baseline", "middle")
     }
-
 }
 
 function loadMakesAndMissesThree(playerData) {
@@ -510,13 +477,10 @@ function loadMakesAndMissesThree(playerData) {
         }
     }
 
-
-
     var data = [
         { name: "3PT MISSES", value: numberOfMakes },
         { name: "3PT MAKES", value: numberofMisses }
     ]
-
 
     var colors = ["#ff0000", "#00cc00"];
 
@@ -530,7 +494,6 @@ function loadMakesAndMissesThree(playerData) {
 
     d3.select("#three-pointers").html("");
     d3.select("#three-pointers-legend").html("");
-
 
     var svg = d3.select("#three-pointers")
         .append("svg")
@@ -572,35 +535,29 @@ function loadMakesAndMissesThree(playerData) {
             .attr("width", 150)
             .attr("height", 100)
             .style("background-color", "lightblue")
-
-        // Add one dot in the legend for each name.
         legend.selectAll("mydots")
             .data(data)
             .enter()
             .append("circle")
             .attr("cx", 20)
-            .attr("cy", function (d, i) { return 20 + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
+            .attr("cy", function (d, i) { return 20 + i * 25 })
             .attr("r", 7)
             .style("fill", function (d, i) { return colors[i] })
 
-        // Add one dot in the legend for each name.
         legend.selectAll("mylabels")
             .data(data)
             .enter()
             .append("text")
             .attr("x", 35)
-            .attr("y", function (d, i) { return 20 + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
+            .attr("y", function (d, i) { return 20 + i * 25 })
             .text(function (d) { return d.name })
             .attr("text-anchor", "left")
             .style("alignment-baseline", "middle")
     }
-
 }
 
 function loadBarChartButtons(playerData) {
     d3.select("#barchart-buttons").html("");
-
-
 
     var firstVariableButton = d3.select("#barchart-buttons")
         .append("button")
@@ -623,9 +580,7 @@ function loadBarChartButtons(playerData) {
         .style("margin", "5px")
         .text("Shots made")
         .on("click", function () { loadMadeShotsBarChart(playerData) });
-
 }
-
 
 function loadTakenShotsBarChart(playerData) {
     d3.select("#player-stats").html("")
@@ -637,17 +592,12 @@ function loadTakenShotsBarChart(playerData) {
     }
 
     var names = allNames.filter(onlyUnique);
-
     var shotsPerPlayer = getPlayersShots(playerData, names);
 
-
-
-    // set the dimensions and margins of the graph
     var margin = { top: 80, right: 30, bottom: 250, left: 80 },
         width = 740 - margin.left - margin.right,
         height = 820 - margin.top - margin.bottom
 
-    // append the svg object to the body of the page
     var svg = d3.select("#player-stats")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -656,7 +606,6 @@ function loadTakenShotsBarChart(playerData) {
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
-    // X axis
     var x = d3.scaleBand()
         .range([0, width])
         .domain(names)
@@ -670,10 +619,9 @@ function loadTakenShotsBarChart(playerData) {
         .style("text-anchor", "end")
         .style("font-size", "1.5em")
 
-    // Add Y axis
     var y = d3.scaleLinear()
         .range([height, 0])
-        .domain([0, Math.max(...shotsPerPlayer)])
+        .domain([0, Math.max(...shotsPerPlayer) + 50])
 
     svg.append("g")
         .call(d3.axisLeft(y))
@@ -711,13 +659,10 @@ function loadTakenShotsBarChart(playerData) {
         .text("Number of shots taken per season")
         .style("font-size", "2.5rem")
 
-
-
 }
 
 
 function getPlayersShots(playerData, names) {
-
 
     var counter = 0;
     var shotsArray = [];
@@ -736,7 +681,6 @@ function getPlayersShots(playerData, names) {
     }
 
     return shotsArray;
-
 }
 
 function loadMadeShotsBarChart(playerData) {
@@ -751,15 +695,10 @@ function loadMadeShotsBarChart(playerData) {
     var names = allNames.filter(onlyUnique);
 
     var shotsPerPlayer = getPlayersMadeShots(playerData, names);
-
-
-
-    // set the dimensions and margins of the graph
     var margin = { top: 80, right: 30, bottom: 250, left: 80 },
         width = 740 - margin.left - margin.right,
         height = 820 - margin.top - margin.bottom
 
-    // append the svg object to the body of the page
     var svg = d3.select("#player-stats")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -768,7 +707,6 @@ function loadMadeShotsBarChart(playerData) {
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
-    // X axis
     var x = d3.scaleBand()
         .range([0, width])
         .domain(names)
@@ -782,10 +720,9 @@ function loadMadeShotsBarChart(playerData) {
         .style("text-anchor", "end")
         .style("font-size", "1.5em")
 
-    // Add Y axis
     var y = d3.scaleLinear()
         .range([height, 0])
-        .domain([0, Math.max(...shotsPerPlayer)])
+        .domain([0, Math.max(...shotsPerPlayer) + 50])
 
     svg.append("g")
         .call(d3.axisLeft(y))
@@ -823,12 +760,9 @@ function loadMadeShotsBarChart(playerData) {
         .text("Number of shots made per season")
         .style("font-size", "2.5rem")
 
-
-
 }
 
 function getPlayersMadeShots(playerData, names) {
-
 
     var counter = 0;
     var shotsArray = [];
@@ -847,5 +781,4 @@ function getPlayersMadeShots(playerData, names) {
     }
 
     return shotsArray;
-
 }

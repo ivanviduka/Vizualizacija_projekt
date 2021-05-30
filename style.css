@@ -5,15 +5,11 @@
   margin: 5;
   padding: 5;
   overflow: hidden;
-
 }
-
-
 
 .info {
     font-family: serif;
     font-size: 30px;
-
 }
 
 #title{
@@ -50,11 +46,54 @@
 
 
 #all-info{
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, 300px);
+    grid-template-rows: repeat(4, 60px);
 }
 
+#choose-player{
+    grid-row-start: 1;
+    grid-column-start: 1;
+    grid-row-end: 1;
+    grid-column-end: 1;
+}
 
+#value-step{
+    grid-row-start: 2;
+    grid-column-start: 1;
+    grid-row-end: 4;
+    grid-column-end: 1;
+}
+
+#choose-quarter{
+    grid-row-start: 1;
+    grid-column-start: 2;
+    grid-row-end: 1;
+    grid-column-end: 2;
+}
+
+#slider-step{
+    grid-row-start: 2;
+    grid-column-start: 2;
+    grid-row-end: 2;
+    grid-column-end: 2; 
+}
+
+#choose-team{
+    grid-row-start: 3;
+    grid-column-start: 2;
+    grid-row-end: 3;
+    grid-column-end: 2;
+}
+
+.dropdown{
+    grid-row-start: 4;
+    grid-column-start: 2;
+    grid-row-end: 4;
+    grid-column-end: 2;
+    margin-top: 10px;
+    margin-left: 20px;
+}
   
 .button-pick-season a:hover {
     background-color: #017c1c;
@@ -62,30 +101,22 @@
 
 #shot-chart-and-options{
     display: flex;
-    flex-direction: column;
-
 }
+
 #shot-chart{
-  
-    margin: 0 auto;
-
-}
-
-.dropdown{
-    margin-left: 22px;
-   
+    margin-right: 25px;
+    margin-top: 40px;
 }
 
 #pie-chart{
+    margin-top: 80px;
+    margin-bottom: 80px;
     display: flex;
-    justify-content: space-between;
-
 }
 
 .pie-chart-items{
-    
-    margin-block-start: 20px;
-    margin-block-end: 20px;
+    margin: auto;
+  
 }
 
 #bar-chart{
@@ -94,7 +125,6 @@
     justify-content: center;
     width: max-content;
     margin: 0 auto;
-
 }
 
 #barchart-buttons{
@@ -103,8 +133,7 @@
 }
 
 g.tick{
-    font-size: 10px;
-    
+    font-size: 10px; 
 }
 
 g.tick text{
@@ -115,9 +144,3 @@ g.tick text{
 g.axis{
     background-color: black;
 }
-
-
-   
-
-
-
