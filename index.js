@@ -1,4 +1,3 @@
-
 let pickSeasonButtons;
 var currentPlayerSelected;
 var currentquarterSelected;
@@ -15,7 +14,6 @@ window.onload = (event) => {
 function buttonClicked(event) {
     event.preventDefault();
     loadAllForWantedSeason(event.target.value);
-
 }
 
 function loadAllForWantedSeason(season) {
@@ -30,8 +28,6 @@ function loadAllForWantedSeason(season) {
         loadBarChartButtons(shotsData);
         loadTakenShotsBarChart(shotsData);
     });
-
-
 }
 
 function onlyUnique(value, index, self) {
@@ -116,18 +112,15 @@ function loadOptions(playerShotsData) {
         "New Orleans Pelicans", "New York Knicks", "Oklahoma City Thunder", "Orlando Magic", "Philadelphia 76ers", "Phoenix Suns",
         "Portland Trail Blazers", "Sacramento Kings", "San Antonio Spurs", "Toronto Raptors", "Utah Jazz", "Washington Wizards"];
 
-
     var select = d3.select('div#opponent-select')
         .append('select')
         .attr('class', 'select')
         .on('change', changeOpponent);
 
-
     var options = select.selectAll('option')
         .data(teams).enter()
         .append('option')
         .text(function (d) { return d; });
-
 
     function changeOpponent() {
         currentOpponentSelected = d3.select('select').property('value');
@@ -143,26 +136,13 @@ function loadShotChart(playerData) {
         y: 650
     };
 
-
     var selectedPlayerData = [];
 
     for (index in playerData) {
 
-
         if (((currentquarterSelected === playerData[index].period) || (currentquarterSelected === 0)) && (currentPlayerSelected === playerData[index].name) && ((currentOpponentSelected === playerData[index].opponent) || (currentOpponentSelected === "any"))) {
             selectedPlayerData.push(playerData[index]);
         }
-    }
-
-    function setOpacity(playerInfo) {
-
-        if (((currentquarterSelected === playerInfo.period) || (currentquarterSelected === 0)) && (currentPlayerSelected === playerInfo.name) && ((currentOpponentSelected === playerInfo.opponent) || (currentOpponentSelected === "any"))) {
-            return 0.75;
-        }
-
-        else return 0.07;
-
-
     }
 
     var svg = d3.select("#shot-chart").html("");
@@ -256,6 +236,15 @@ function loadShotChart(playerData) {
             .style("background-color", "#ffff66")
             .html(`Game date: ${gameDate}<br>
                    Shotclock time: ${timeLeft}<br>`);
+    }
+
+    function setOpacity(playerInfo) {
+
+        if (((currentquarterSelected === playerInfo.period) || (currentquarterSelected === 0)) && (currentPlayerSelected === playerInfo.name) && ((currentOpponentSelected === playerInfo.opponent) || (currentOpponentSelected === "any"))) {
+            return 0.75;
+        }
+
+        else return 0.07;
     }
 
     loadPieChart(selectedPlayerData);
@@ -491,7 +480,6 @@ function loadMakesAndMissesThree(playerData) {
     var pie = d3.pie()
         .value(function (d) { return d.value; });
 
-
     d3.select("#three-pointers").html("");
     d3.select("#three-pointers-legend").html("");
 
@@ -523,7 +511,6 @@ function loadMakesAndMissesThree(playerData) {
             .style("background-color", "#ffff66")
             .html(`Number of shots: ${numberOfShots}<br>`);
     }
-
 
     pieArcs.append("path")
         .attr("fill", function (d, i) { return colors[i] })
@@ -660,7 +647,6 @@ function loadTakenShotsBarChart(playerData) {
         .style("font-size", "2.5rem")
 
 }
-
 
 function getPlayersShots(playerData, names) {
 

@@ -1,3 +1,13 @@
+Court visualisation:
 https://jedong.medium.com/generating-a-d3-js-based-nba-shot-chart-e540040e8ecb
-https://www.nba.com/stats/teams/shooting/?Season=2020-21&SeasonType=Regular%20Season&DistanceRange=By%20Zone
+
+Slider implementation:
+https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
+
+Data source:
 https://nbasavant.com/shot_search.php
+
+Heroku:
+https://data-visualisation12.herokuapp.com/
+
+Priručnik s LV
